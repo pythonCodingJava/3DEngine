@@ -92,7 +92,7 @@ public class panel extends JPanel{
 	
 		//Plane
 		Point3D p = new Point3D(0,0,0);
-		o = object.plane(p.x-350,p.y-350,p.z,700,700,30,h,w);
+		o = object.plane(p.x-250,p.y-250,p.z,500,500,20,h,w);
 		double x = 0;
 		double y = 0;
 		for(Point3D point : o.points){
@@ -155,18 +155,17 @@ public class panel extends JPanel{
 			}
 		}
 
-		object toDraw = o.allInOne(camera, orientation, new Point3D(0,0,10,fheight,fwidth), new Point3D(0,0,1,fheight,fwidth), new Point3D(0, 0, 50, fheight, fwidth));
+		object toDraw = o.allInOne(camera, orientation, new Point3D(0,0,0.01,fheight,fwidth), new Point3D(0,0,1,fheight,fwidth), new Point3D(0, 0, 50, fheight, fwidth));
 		for(int i = 0; i<toDraw.triangles.size(); i++){
 			Triangle t = toDraw.triangles.get(i);
-			Point3D normal = t.normalize().normal();
-			// Point3D centroid = t.getCentroid();
-			// Point3D newlight = new Point3D(light.x - camera.x, light.y - camera.y, light.z - camera.z);
-			// double dot = Point3D.dotProduct(centroid.subtract(newlight).normal(), normal);
-			double dot = Point3D.dotProduct(lightdir, normal);
-			// double dist = Point3D.dist(centroid, light);
-			// double rad = 1000;
-			// if(dist > rad) dist = rad;
-			double sub = 0;//map(dist, 0, rad, 0, 255);
+			Point3D normal = o.triangles.get(t.idx).normalize().normal();
+			Point3D centroid = o.triangles.get(t.idx).getCentroid();
+			double dot = Point3D.dotProduct(centroid.subtract(light).normal(), normal);
+			// double dot = Point3D.dotProduct(lightdir, normal);
+			double dist = Point3D.dist(centroid, light);
+			double rad = 1000;
+			if(dist > rad) dist = rad;
+			double sub = map(dist, 0, rad, 0, 255);
 			int color = (int)(map(dot, -1, 1, 0, 255) - sub);
 			if(color < 0) color = 0;
 			g3d.setColor(new Color(color, color, color));
@@ -225,6 +224,12 @@ public class panel extends JPanel{
 	}
 
 	public void putLight(){
+		Point3D pointing = new Point3D(0,0,1);
+		pointing.rotateX(-orientation.x);
+		pointing.rotateY(-orientation.y);
+		pointing.rotateZ(-orientation.z);
+		lightdir = new Point3D(pointing.x, pointing.y, pointing.z);
+
 		light = new Point3D(camera.x, camera.y, camera.z);
 	}
 }

@@ -6,6 +6,8 @@ import java.util.ArrayList;
 
 public class Triangle {
 	
+	int idx = 0;
+
 	int i;
 	int i2;
 	int i3;
@@ -164,4 +166,5 @@ public class Triangle {
 		ret.i3 = i3;
 		return ret;
 	}
+
 }

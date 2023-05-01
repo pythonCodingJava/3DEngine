@@ -3,23 +3,28 @@ package renderer;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.Point;
 import java.awt.geom.Line2D;
 import java.awt.geom.Path2D;
 import java.awt.geom.Point2D;
 
 public class Graphics3D {
 
-	double height;
-	double width;
+	private double height;
+	private double width;
 	
 	Graphics2D g;
 	
-	Color c = Color.black;
-	float stroke = 1f;
+	private Color c = Color.black;
+	private float stroke = 1f;
 	
-	public Graphics3D(double h, double w) {
+	private double[][] depthBuffer;
+
+	public Graphics3D(int h, int w) {
 		height = h;
 		width = w;
+
+		depthBuffer = new double[h][w];
 	}
 	
 	public void setColor(Color color) {
@@ -117,9 +122,7 @@ public class Graphics3D {
 		p.lineTo(p3.getX(), p3.getY());
 		p.lineTo(p1.getX(), p1.getY());
 		
-		//g.draw(p);
 		g.fill(p);
-		
 	}
 	
 }

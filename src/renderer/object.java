@@ -63,9 +63,16 @@ public class object {
 					new Point3D(x + (i+1)*res, y + (j+1)*res, z, height, w)
 				};
 				for(Point3D p : points) ret.points.add(p);
+				
 				int s = ret.points.size();
-				ret.triangles.add(new Triangle(s-3, s-4, s-2,ret.points));
-				ret.triangles.add(new Triangle(s-3, s-2, s-1,ret.points));
+				Triangle t1 = new Triangle(s-3, s-4, s-2,ret.points);
+				t1.idx = ret.triangles.size();
+
+				Triangle t2 = new Triangle(s-3, s-2, s-1,ret.points);
+				t2.idx = ret.triangles.size()+1;
+
+				ret.triangles.add(t1);
+				ret.triangles.add(t2);
 			}
 		}
 		ret.center = ret.getCenter();
@@ -122,6 +129,7 @@ public class object {
 					}
 					Point3D[] vers = getArray(ver);
 					Triangle toAdd = new Triangle(idx1, idx2, idx3, vers);
+					toAdd.idx = t.size();
 					t.add(toAdd);
 				}
 			}
@@ -226,7 +234,9 @@ public class object {
 			ret.points.add(new Point3D(p.x,p.y,p.z,p.height,p.width));
 		}
 		for(Triangle t : triangles){
-			ret.triangles.add(new Triangle(t.i, t.i2, t.i3, ret.points));
+			Triangle ta = new Triangle(t.i, t.i2, t.i3, ret.points);
+			ta.idx = t.idx;
+			ret.triangles.add(ta);
 		}
 
 		return ret;
@@ -242,6 +252,7 @@ public class object {
 				triangle.i = ret.points.size()-3;
 				triangle.i2 = ret.points.size()-2;
 				triangle.i3 = ret.points.size()-1;
+				triangle.idx = triangles.get(i).idx;
 				ret.triangles.add(triangle);
 				int index = ret.triangles.size()-1;
 				for(int j = ret.triangles.size()-2; j>=0; j--){
@@ -290,13 +301,14 @@ public class object {
 			triangle.clip(plane_p, plane_n, ref, ts);
 			for(Triangle tri : ts){
 				Point3D normal = tri.normalize().normal();
-				if(Point3D.dotProduct(tri.points[0], normal) > 0 && 
-				Point3D.dotProduct(tri.points[1], normal) > 0 &&
-				Point3D.dotProduct(tri.points[2], normal) > 0){
+				if(Point3D.dotProduct(tri.points[0], normal) >= 0 && 
+				Point3D.dotProduct(tri.points[1], normal) >= 0 &&
+				Point3D.dotProduct(tri.points[2], normal) >= 0){
 					for(Point3D p : tri.points) ret.points.add(p);
 					tri.i = ret.points.size()-3;
 					tri.i2 = ret.points.size()-2;
 					tri.i3 = ret.points.size()-1;
+					tri.idx = t.idx;
 					ret.triangles.add(tri);
 					int index = ret.triangles.size()-1;
 					for(int j = ret.triangles.size()-2; j>=0; j--){
