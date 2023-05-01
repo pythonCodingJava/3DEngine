@@ -6,7 +6,7 @@ public class Point3D {
 
 	final static double fnear = 0.01;
 	final static double ffar = 1000;
-	final static double fov = Math.toRadians(60);
+	final static double fov = Math.toRadians(45);
 	final static double ffovrad = 1/Math.tan((fov/2));
 	
 	double x;

@@ -50,7 +50,7 @@ public class object {
 		object ret = new object(p,t);
 		ret.identify();		
 
-		return ret;//new object(p,t);
+		return ret;
 	}
 
 	public void identify(){
@@ -326,7 +326,7 @@ public class object {
 					ret.triangles.add(tri);
 					int index = ret.triangles.size()-1;
 					for(int j = ret.triangles.size()-2; j>=0; j--){
-						if(tri.getCentroid().getMag() > ret.triangles.get(j).getCentroid().getMag()){
+						if(tri.getMeasure() > ret.triangles.get(j).getMeasure()){
 							Triangle toput = ret.triangles.get(j);
 							ret.triangles.set(index, toput);
 							ret.triangles.set(j, tri);

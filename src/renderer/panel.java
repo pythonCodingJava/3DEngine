@@ -140,6 +140,8 @@ public class panel extends JPanel{
 		g2d.setColor(Color.WHITE);
 		g3d.g = g2d;
 		
+	//	o = o.rotateX(0.5);
+
 		//Drawing a plane
 		if(plane){
 			double res = 50;

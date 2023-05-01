@@ -61,7 +61,12 @@ public class Triangle {
 		ret.x = (y1*z2 - y2*z1);
 		ret.y = -(x1*z2 - x2*z1);
 		ret.z = (x1*y2 - x2*y1);
+
 		return ret;
+	}
+
+	public double getMeasure(){
+		return getCentroid().getMag();
 	}
 	
 	public void clip(Plane3D plane, Point3D ref, ArrayList<Triangle> ret){
