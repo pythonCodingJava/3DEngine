@@ -64,14 +64,14 @@ public class Triangle {
 		return ret;
 	}
 	
-	public void clip(Point3D plane_p, Point3D plane_n, Point3D ref, ArrayList<Triangle> ret){
+	public void clip(Plane3D plane, Point3D ref, ArrayList<Triangle> ret){
 		// ret.add(this);
 		ArrayList<Point3D> inside = new ArrayList<>();
 		ArrayList<Point3D> outside = new ArrayList<>();
 
-		double refference = Point3D.dotProduct(plane_n, ref) - Point3D.dotProduct(plane_n, plane_p);
+		double refference = plane.getPower(ref);
 		for(Point3D p : points){
-			double dot = Point3D.dotProduct(p, plane_n) - Point3D.dotProduct(plane_p, plane_n);
+			double dot = plane.getPower(p);
 			if(refference*dot >= 0) inside.add(p);
 			else outside.add(p);
 		}
@@ -80,8 +80,8 @@ public class Triangle {
 			ret.add(this);
 		}
 		if(inside.size() == 1) {	
-			Point3D extra_p1 = lineplaneintersec(inside.get(0), outside.get(0), plane_p, plane_n);
-			Point3D extra_p2 = lineplaneintersec(inside.get(0), outside.get(1), plane_p, plane_n);
+			Point3D extra_p1 = plane.linePlaneIntersec(inside.get(0), outside.get(0));
+			Point3D extra_p2 = plane.linePlaneIntersec(inside.get(0), outside.get(1));
 			Triangle toadd = new Triangle(inside.get(0), extra_p1, extra_p2);
 			if(Point3D.dotProduct(toadd.getCentroid(), toadd.normalize()) < 0){
 				toadd = new Triangle(inside.get(0), extra_p2, extra_p1);
@@ -90,8 +90,8 @@ public class Triangle {
 		}
 
 		if(inside.size() == 2) {
-			Point3D extra_p1 = lineplaneintersec(inside.get(0), outside.get(0), plane_p, plane_n);
-			Point3D extra_p2 = lineplaneintersec(inside.get(1), outside.get(0), plane_p, plane_n);
+			Point3D extra_p1 = plane.linePlaneIntersec(inside.get(0), outside.get(0));
+			Point3D extra_p2 = plane.linePlaneIntersec(inside.get(1), outside.get(0));
 
 			Triangle t1 = new Triangle(extra_p1,inside.get(0),  extra_p2);
 			if(Point3D.dotProduct(t1.getCentroid(), t1.normalize()) < 0){
@@ -108,21 +108,6 @@ public class Triangle {
 		}
 	}
 
-	public static Point3D lineplaneintersec(Point3D p1, Point3D p2, Point3D plane_p, Point3D plane_n){
-		Point3D ret = new Point3D(0,0,0,p1.height,p1.width);
-		
-		double d = Point3D.dotProduct(plane_p, plane_n);
-
-		Point3D p = p2.subtract(p1);
-		double lambda = (d - Point3D.dotProduct(p1, plane_n))/Point3D.dotProduct(plane_n, p);
-
-		ret.x = lambda*(p.x) + p1.x;
-		ret.y = lambda*(p.y) + p1.y;
-		ret.z = lambda*(p.z) + p1.z;
-
-		return ret;
-	}
-
 	public Point3D getCentroid(){
 		double x = (points[0].x + points[1].x + points[2].x)/3;
 		double y = (points[0].y + points[1].y + points[2].y)/3;
@@ -131,7 +116,7 @@ public class Triangle {
 	}
 
 	public boolean intersects(Point3D p1, Point3D p2, Point3D center){
-		Point3D inplane = lineplaneintersec(p1, p2, points[0], normalize());
+		Point3D inplane = new Plane3D(normalize().normal(), points[0]).linePlaneIntersec(p1, p2);
 		for(Point3D p : points){
 			if(p.x == inplane.x && p.y == inplane.y && p.z == inplane.z) return false;
 		}

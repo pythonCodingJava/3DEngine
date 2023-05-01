@@ -77,6 +77,9 @@ public class panel extends JPanel{
 
 	private Graphics2D g2d;
 
+	int res = 20;
+	int n = 30;
+
 	public panel(int h, int w){
 		exec = Executors.newFixedThreadPool(nthreads);
 		fheight = h;
@@ -92,13 +95,13 @@ public class panel extends JPanel{
 	
 		//Plane
 		Point3D p = new Point3D(0,0,0);
-		o = object.plane(p.x-250,p.y-250,p.z,500,500,20,h,w);
+		o = object.plane(p.x-res*n/2,p.y-res*n/2,p.z,res*n,res*n,res,h,w);
 		double x = 0;
 		double y = 0;
 		for(Point3D point : o.points){
 			x = (point.x+350)/50;
 			y = (point.y+350)/50;
-			point.z += Perlin.PerlinNoise(x, y)*50;
+			point.z += Perlin.PerlinNoise(x, y)*70 + Perlin.PerlinNoise((point.x+289)/120, (point.y+123)/120)*90;
 		}
 		o = o.rotateX(90);
 
@@ -155,7 +158,9 @@ public class panel extends JPanel{
 			}
 		}
 
-		object toDraw = o.allInOne(camera, orientation, new Point3D(0,0,0.01,fheight,fwidth), new Point3D(0,0,1,fheight,fwidth), new Point3D(0, 0, 50, fheight, fwidth));
+		Plane3D[] plane = {new Plane3D(new Point3D(0,0,0.01,fheight,fwidth), new Point3D(0,0,1,fheight,fwidth))};
+		object toDraw = o.allInOne(camera, orientation,	plane, new Point3D(0, 0, 50, fheight, fwidth));
+		
 		for(int i = 0; i<toDraw.triangles.size(); i++){
 			Triangle t = toDraw.triangles.get(i);
 			Point3D normal = o.triangles.get(t.idx).normalize().normal();
@@ -163,7 +168,7 @@ public class panel extends JPanel{
 			double dot = Point3D.dotProduct(centroid.subtract(light).normal(), normal);
 			// double dot = Point3D.dotProduct(lightdir, normal);
 			double dist = Point3D.dist(centroid, light);
-			double rad = 1000;
+			double rad = 5000;
 			if(dist > rad) dist = rad;
 			double sub = map(dist, 0, rad, 0, 255);
 			int color = (int)(map(dot, -1, 1, 0, 255) - sub);

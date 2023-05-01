@@ -47,7 +47,16 @@ public class object {
 		t.add(new Triangle(8-1, 6-1, 7-1, p));
 		t.add(new Triangle(8-1, 5-1, 6-1, p));
 		
-		return new object(p,t);
+		object ret = new object(p,t);
+		ret.identify();		
+
+		return ret;//new object(p,t);
+	}
+
+	public void identify(){
+		for(int i = 0; i<triangles.size(); i++){
+			triangles.get(i).idx = i;
+		}
 	}
 
 	public static object plane(double x, double y, double z, double len, double width, int res, double height, double w) {
@@ -242,11 +251,11 @@ public class object {
 		return ret;
 	}
 
-	public object clip(Point3D plane_p, Point3D plane_n, Point3D ref){
+	public object clip(Plane3D plane, Point3D ref){
 		object ret = new object();
 		for(int i = triangles.size()-1; i>=0; i--){
 			ArrayList<Triangle> t = new ArrayList<Triangle>();
-			triangles.get(i).clip(plane_p, plane_n, ref, t);
+			triangles.get(i).clip(plane, ref, t);
 			for(Triangle triangle : t){
 				for(Point3D p : triangle.points) ret.points.add(p);
 				triangle.i = ret.points.size()-3;
@@ -286,7 +295,7 @@ public class object {
 		for(Point3D p : o.points) points.add(p);
 	}
 
-	public object allInOne(Point3D camera, Point3D camera_orientation, Point3D plane_p, Point3D plane_n, Point3D ref){
+	public object allInOne(Point3D camera, Point3D camera_orientation, Plane3D[] planes, Point3D ref){
 		object ret = new object();
 		for(Point3D p : points) {
 			Point3D toadd = new Point3D(p.x - camera.x, p.y - camera.y, p.z - camera.z, p.height, p.width);
@@ -298,7 +307,12 @@ public class object {
 		for(Triangle t : triangles){
 			Triangle triangle = new Triangle(t.i, t.i2, t.i3, ret.points);
 			ArrayList<Triangle> ts = new ArrayList<>();
-			triangle.clip(plane_p, plane_n, ref, ts);
+			triangle.clip(planes[0], ref, ts);
+			for(int i = 1; i<planes.length; i++){
+				for(int j = ts.size()-1; j>=0; j--){
+					ts.get(j).clip(planes[i], ref, ts);
+				}
+			}
 			for(Triangle tri : ts){
 				Point3D normal = tri.normalize().normal();
 				if(Point3D.dotProduct(tri.points[0], normal) >= 0 && 
