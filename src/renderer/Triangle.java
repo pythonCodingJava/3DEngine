@@ -176,4 +176,7 @@ public class Triangle {
 		return new Plane3D(points[0], points[1], points[2]);
 	}
 
+	public double getAvgLength(){
+		return (Point3D.dist(points[0], points[1])+Point3D.dist(points[0], points[2])+Point3D.dist(points[1], points[2]))/3;
+	}
 }

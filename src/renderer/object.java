@@ -341,4 +341,13 @@ public class object {
 		}
 		return ret;
 	}
+
+	public void reconfigure(){
+		for(Triangle t : triangles){
+			t.idx = triangles.indexOf(t);
+			t.i = points.indexOf(t.points[0]);
+			t.i2 = points.indexOf(t.points[1]);
+			t.i3 = points.indexOf(t.points[2]);
+		}
+	}
 }

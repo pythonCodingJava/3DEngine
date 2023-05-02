@@ -86,12 +86,10 @@ public class panel extends JPanel{
 					o.triangles.remove(selectedIdx);
 					boolean[] exists = new boolean[3];
 					for(int i = 0; i<o.triangles.size(); i++){
-						o.triangles.get(i).idx = i;
 						for(int j = 0; j<3; j++){
 							for(int k = 0; k<3; k++){
 								if(o.triangles.get(i).points[j].equals(triangle.points[k])) {
 									exists[k] = true;
-									break;
 								}
 							}
 						}	
@@ -101,9 +99,12 @@ public class panel extends JPanel{
 							o.points.remove(triangle.points[i]);
 						}
 					}
+					o.reconfigure();
+					// System.out.println(o.points.size());
+					// System.exit(0);
 					dealt = true;
 				}else{
-					double len = -20;
+					double len = -o.triangles.get(selectedIdx).getAvgLength();
 					Point3D point = triangle.normalize().normal().multiply(len).subtract(triangle.getCentroid().multiply(-1));
 					o.points.add(point);
 					int[] id = triangle.getIds();
@@ -161,12 +162,6 @@ public class panel extends JPanel{
 
 
 		init();
-		
-		addMouseListener(new MouseAdapter(){
-			public void mousePressed(MouseEvent e){
-				pressed = true;
-			}
-		});
 	}
 
 	public panel(int h, int w, String file){
@@ -188,6 +183,12 @@ public class panel extends JPanel{
 		
 		light = new Point3D(350,350,-180);
 		lightdir = new Point3D(1,-1,0).normal();
+		addMouseListener(new MouseAdapter(){
+			public void mousePressed(MouseEvent e){
+				pressed = true;
+			}
+		});
+
 		t.start();
 	}
 
