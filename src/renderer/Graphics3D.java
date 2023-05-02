@@ -13,7 +13,7 @@ public class Graphics3D {
 	private double height;
 	private double width;
 	
-	Graphics2D g;
+	public Graphics2D g;
 	
 	private Color c = Color.black;
 	private float stroke = 1f;
@@ -84,6 +84,7 @@ public class Graphics3D {
 
 	public void draw3Dpoint(Point3D p) {
 		Point2D translated = p.getXY();
+		// System.out.println(translated.getX()+", "+translated.getY());
 		g.draw(new Line2D.Double(translated.getX(), translated.getY(), translated.getX(), translated.getY()));
 	}
 	
@@ -107,7 +108,7 @@ public class Graphics3D {
 		g.draw(new Line2D.Double(p1.getX(), p1.getY(), p3.getX(), p3.getY()));
 	}
 	
-	public void fillTriangle(Triangle t, double scale) {
+	public void fillTriangle(Triangle t, int alpha, double scale) {
 		Point2D p1 = t.points[0].getXY();
 		Point2D p2 = t.points[1].getXY();
 		Point2D p3 = t.points[2].getXY();
@@ -116,6 +117,8 @@ public class Graphics3D {
 		p2.setLocation(p2.getX()*scale,p2.getY()*scale);
 		p3.setLocation(p3.getX()*scale,p3.getY()*scale);
 		
+		if(!inBounds(p1) && !inBounds(p2) && !inBounds(p3)) return;
+
 		Path2D p = new Path2D.Double();
 		p.moveTo(p1.getX(), p1.getY());
 		p.lineTo(p2.getX(), p2.getY());
@@ -123,6 +126,13 @@ public class Graphics3D {
 		p.lineTo(p1.getX(), p1.getY());
 		
 		g.fill(p);
+		g.setColor(new Color(0,0,0,alpha));
+		g.fill(p);
+		g.setColor(c);
+	}
+
+	private boolean inBounds(Point2D p){
+		return !(Math.abs(p.getX()) > width/2 && Math.abs(p.getY()) > height/2);
 	}
 	
 }

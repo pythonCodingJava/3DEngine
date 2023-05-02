@@ -1,4 +1,6 @@
-package renderer;
+package WindowManager;
+
+import renderer.*;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -14,16 +16,18 @@ public class mainClass{
 	static panel panel;
 
 	static String filename = "";
-	static double factor = 1;
 
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
+		// String[] args = new String[2];
+		// args[0] = "/home/kartik/Downloads/res/shapes.obj";
+		// args[1] = "5";
 		if(args.length != 0) {
 			filename = args[0];
-			factor = Double.parseDouble(args[1]);
+			object.fac = Double.parseDouble(args[1]);
 		}
 
-		Dimension size = /*new Dimension(1000,500);//*/Toolkit.getDefaultToolkit().getScreenSize();
+		Dimension size = new Dimension(600,600);//*/Toolkit.getDefaultToolkit().getScreenSize();
 		f.setSize(size.height, size.height);
 		f.setResizable(false);
 		f.setLocation(0,0);
@@ -55,6 +59,9 @@ public class mainClass{
 				if(e.getKeyCode() == KeyEvent.VK_DOWN) panel.orientoff[0] = -1;
 				if(e.getKeyCode() == KeyEvent.VK_RIGHT) panel.orientoff[1] = 1;
 				if(e.getKeyCode() == KeyEvent.VK_LEFT) panel.orientoff[1] = -1;
+
+				//Shift key
+				if(e.getKeyCode() == KeyEvent.VK_SHIFT) panel.del = true;
 			}
 
 			public void keyReleased(KeyEvent e){
@@ -67,6 +74,8 @@ public class mainClass{
 
 				if(e.getKeyCode() == KeyEvent.VK_UP || e.getKeyCode() == KeyEvent.VK_DOWN) panel.orientoff[0] = 0;
 				if(e.getKeyCode() == KeyEvent.VK_RIGHT || e.getKeyCode() == KeyEvent.VK_LEFT) panel.orientoff[1] = 0;
+
+				if(e.getKeyCode() == KeyEvent.VK_SHIFT) panel.del = false;
 			}
 		});
 

@@ -1,10 +1,21 @@
-package renderer;
+package WindowManager;
 
 import javax.swing.*;
+import renderer.*;
+import renderer.Graphics3D;
+import renderer.Plane3D;
+import renderer.Point3D;
+import renderer.Triangle;
+import renderer.object;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.security.KeyStore.TrustedCertificateEntry;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -19,7 +30,7 @@ public class panel extends JPanel{
 	Graphics3D g3d;
 
 	int[] offset;
-	double[] vel;
+	int vel;
 	Point3D camera;
 	
 	int[] orientoff;
@@ -30,6 +41,7 @@ public class panel extends JPanel{
 	Point3D lightdir;
 
 	private double fps = 0;
+	private final int cap = 120;
 	private long lastTime = 0;
 
 	final ExecutorService exec;
@@ -37,7 +49,7 @@ public class panel extends JPanel{
 	Timer t = new Timer(10, new ActionListener(){
 		public void actionPerformed(ActionEvent e){
 			// Capping at 60 fps.
-			while(System.currentTimeMillis() - lastTime <= 1000/60){}
+			while(System.currentTimeMillis() - lastTime <= 1000/cap){}
 
 			// Calculating fps.
 			long t = System.currentTimeMillis();
@@ -48,7 +60,8 @@ public class panel extends JPanel{
 			fheight = mainClass.f.getHeight();
 			fwidth = mainClass.f.getWidth();
 
-			Point3D off = new Point3D(offset[0]*vel[0], offset[1]*vel[1], offset[2]*vel[2]);
+			double velocity = vel*(double)(cap*(t-lastTime))/1000;
+			Point3D off = new Point3D(offset[0]*velocity, offset[1]*velocity, offset[2]*velocity);
 			Point3D pointing = new Point3D(0,0,1);
 			Point3D up = new Point3D(0,-1,0);
 			pointing.rotateX(-orientation.x);
@@ -67,6 +80,42 @@ public class panel extends JPanel{
 			camera.rotateY(-orientoff[1]*mag);
 			camera.rotateZ(-orientoff[2]*mag);
 
+			if(!dealt){
+				Triangle triangle = o.triangles.get(selectedIdx);
+				if(del){
+					o.triangles.remove(selectedIdx);
+					boolean[] exists = new boolean[3];
+					for(int i = 0; i<o.triangles.size(); i++){
+						o.triangles.get(i).idx = i;
+						for(int j = 0; j<3; j++){
+							if(o.triangles.get(i).points[j].equals(triangle.points[j])) {
+								exists[j] = true;
+							}
+						}
+						
+					}
+					System.out.println(Arrays.toString(exists));
+					System.exit(0);
+					for(int i = 0; i<3; i++){
+						if(!exists[i]) {
+							o.points.remove(triangle.points[i]);
+						}
+					}
+					dealt = true;
+				}else{
+					double len = -10;
+					Point3D point = triangle.normalize().normal().multiply(len).subtract(triangle.getCentroid().multiply(-1));
+					o.points.add(point);
+					int[] id = triangle.getIds();
+					int i = o.points.size()-1;
+					int size = o.triangles.size();
+					o.triangles.set(selectedIdx, new Triangle(id[0],id[1],i,o.points,selectedIdx));
+					o.triangles.add(new Triangle(id[2],id[0],i,o.points,size));
+					o.triangles.add(new Triangle(id[1],id[2],i,o.points,size+1));
+					dealt = true;
+				}
+			}
+
 			repaint();
 			lastTime = t;
 		}
@@ -77,8 +126,13 @@ public class panel extends JPanel{
 
 	private Graphics2D g2d;
 
-	int res = 20;
-	int n = 30;
+	int res = 50;
+	int n = 1;
+
+	private int selectedIdx = 0;
+	private boolean pressed = false;
+	private boolean dealt = true;
+	boolean del = false;
 
 	public panel(int h, int w){
 		exec = Executors.newFixedThreadPool(nthreads);
@@ -96,16 +150,23 @@ public class panel extends JPanel{
 		//Plane
 		Point3D p = new Point3D(0,0,0);
 		o = object.plane(p.x-res*n/2,p.y-res*n/2,p.z,res*n,res*n,res,h,w);
-		double x = 0;
-		double y = 0;
-		for(Point3D point : o.points){
-			x = (point.x+350)/50;
-			y = (point.y+350)/50;
-			point.z += Perlin.PerlinNoise(x, y)*70 + Perlin.PerlinNoise((point.x+289)/120, (point.y+123)/120)*90;
-		}
-		o = o.rotateX(90);
+		// double x = 0;
+		// double y = 0;
+		// for(Point3D point : o.points){
+		// 	x = (point.x+350)/50;
+		// 	y = (point.y+350)/50;
+		// 	point.z += Perlin.PerlinNoise(x, y)*70 + Perlin.PerlinNoise((point.x+289)/120, (point.y+123)/120)*90;
+		// }
+		// o = o.rotateX(90);
+
 
 		init();
+		
+		addMouseListener(new MouseAdapter(){
+			public void mousePressed(MouseEvent e){
+				pressed = true;
+			}
+		});
 	}
 
 	public panel(int h, int w, String file){
@@ -121,7 +182,7 @@ public class panel extends JPanel{
 		camera = new Point3D(0,0,0);
 		orientation = new Point3D(0,0,0);
 		offset = new int[3];
-		vel = new double[]{2,2,2};
+		vel = 1;
 
 		orientoff = new int[3];
 		
@@ -135,14 +196,12 @@ public class panel extends JPanel{
 		super.paintComponent(g);
 
 		g2d = (Graphics2D) g;
-		g2d.setStroke(new BasicStroke(1));
+		g2d.setStroke(new BasicStroke(5));
 		g2d.translate(mainClass.f.getWidth()/2, mainClass.f.getHeight()/2);
 		g2d.setColor(Color.WHITE);
 		g3d.g = g2d;
 		
-	//	o = o.rotateX(0.5);
-
-		//Drawing a plane
+		//o = o.rotateX(0.5);		//Drawing a plane
 		if(plane){
 			double res = 50;
 			int n = 20;
@@ -163,6 +222,21 @@ public class panel extends JPanel{
 		Plane3D[] plane = {new Plane3D(new Point3D(0,0,0.01,fheight,fwidth), new Point3D(0,0,1,fheight,fwidth))};
 		object toDraw = o.allInOne(camera, orientation,	plane, new Point3D(0, 0, 50, fheight, fwidth));
 		
+		if(pressed && getMousePosition() != null){
+			Point mouse = getMousePosition();
+			// Point3D p = new Point3D((-mouse.x+fwidth/2) * (double)(2*Point3D.fnear/(fwidth*Math.pow(0.5,3))), (-mouse.y+fheight/2) * (double)(2*Point3D.fnear/(fheight*Math.pow(0.5,3))), 0.01);
+			Point3D p = new Point3D(fwidth/2 - mouse.x, fheight/2 - mouse.y, fwidth*Math.tan(Point3D.fov/2)/2);
+			double z = -99999;
+			for(Triangle t : toDraw.triangles){
+				Point3D interP = t.getPlane().linePlaneIntersec(Point3D.origin, p);
+				if(t.contains(interP) && interP.z > z){
+					selectedIdx = t.idx;
+				}
+			}
+			pressed = false;
+			dealt = false;
+		}
+
 		for(int i = 0; i<toDraw.triangles.size(); i++){
 			Triangle t = toDraw.triangles.get(i);
 			Point3D normal = o.triangles.get(t.idx).normalize().normal();
@@ -175,12 +249,11 @@ public class panel extends JPanel{
 			double sub = map(dist, 0, rad, 0, 255);
 			int color = (int)(map(dot, -1, 1, 0, 255) - sub);
 			if(color < 0) color = 0;
-			g3d.setColor(new Color(color, color, color));
-			g3d.fillTriangle(t, 1);
+			if(t.idx != selectedIdx) g3d.setColor(new Color(0xceeb));
+			else g3d.setColor(Color.PINK);
+			g3d.fillTriangle(t, 255-color, 1);
 		}
 		
-
-
 		// object toDraw = o.translate(camera);
 		// if(orientation.x != 0) toDraw = toDraw.rotateX(orientation.x);
 		// if(orientation.y != 0) toDraw = toDraw.rotateY(orientation.y);

@@ -1,4 +1,4 @@
-package renderer;
+package WindowManager;
 
 import java.util.*;
 import java.io.*;

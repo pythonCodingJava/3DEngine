@@ -6,12 +6,12 @@ import java.util.ArrayList;
 
 public class Triangle {
 	
-	int idx = 0;
+	public int idx = 0;
 
 	int i;
 	int i2;
 	int i3;
-	Point3D[] points = new Point3D[3];
+	public Point3D[] points = new Point3D[3];
 	Color color = Color.white;//*/new Color(0.247059f, 0.282353f, 0.800000f);
 	double avgz;
 	
@@ -32,6 +32,17 @@ public class Triangle {
 		points[0] = p.get(i1);
 		points[1] = p.get(i2);
 		points[2] = p.get(i3);
+		// avgOut();
+	}
+
+	public Triangle(int i1,int i2,int i3, ArrayList<Point3D> p, int idx) {
+		i = i1;
+		this.i2 = i2;
+		this.i3 = i3;
+		points[0] = p.get(i1);
+		points[1] = p.get(i2);
+		points[2] = p.get(i3);
+		this.idx = idx;
 		// avgOut();
 	}
 	
@@ -67,6 +78,10 @@ public class Triangle {
 
 	public double getMeasure(){
 		return getCentroid().getMag();
+	}
+
+	public int[] getIds(){
+		return new int[]{i,i2,i3};
 	}
 	
 	public void clip(Plane3D plane, Point3D ref, ArrayList<Triangle> ret){
@@ -155,6 +170,10 @@ public class Triangle {
 		ret.i2 = i2;
 		ret.i3 = i3;
 		return ret;
+	}
+
+	public Plane3D getPlane(){
+		return new Plane3D(points[0], points[1], points[2]);
 	}
 
 }

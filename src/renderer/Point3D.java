@@ -4,21 +4,21 @@ import java.awt.geom.Point2D;
 
 public class Point3D {
 
-	final static double fnear = 0.01;
-	final static double ffar = 1000;
-	final static double fov = Math.toRadians(45);
-	final static double ffovrad = 1/Math.tan((fov/2));
+	public final static double fnear = 0.01;
+	public final static double ffar = 1000;
+	public final static double fov = Math.toRadians(60);
+	public final static double ffovrad = 1/Math.tan((fov/2));
 	
-	double x;
-	double y;
-	double z;
+	public double x;
+	public double y;
+	public double z;
 	
 	double height;
 	double width;
 	
 	MatrixMultiplication mm = new MatrixMultiplication();
 
-	static final Point3D origin = new Point3D(0,0,0);
+	public static final Point3D origin = new Point3D(0,0,0);
 	
 	public Point3D(double xx, double yy, double zz, double h, double w) {
 		x = xx;
@@ -177,5 +177,9 @@ public class Point3D {
 		ret.y = -(x*p2.z - p2.x*z);
 		ret.z = (x*p2.y - p2.x*y);
 		return ret;
+	}
+
+	public boolean equals(Point3D p){
+		return p.x == x && p.y == y && p.z == z;
 	}
 }

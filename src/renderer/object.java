@@ -1,12 +1,16 @@
 package renderer;
 
 import java.util.ArrayList;
+
+import WindowManager.mainClass;
+
 import java.io.*;
 
 public class object {
 	
-	ArrayList<Point3D> points;
-	ArrayList<Triangle> triangles;
+	public ArrayList<Point3D> points;
+	public ArrayList<Triangle> triangles;
+	public static double fac = 1;
 
 	Point3D center;
 	
@@ -117,7 +121,6 @@ public class object {
 			int idx2 = 0;
 			int idx3 = 0;
 
-			double fac = mainClass.factor;
 			for(int i = 0; i<spl.length-3; i++) {
 				//if(spl[i].contains("v") && spl[i].toCharArray().length>0 && spl[i].toCharArray().length<5)System.out.println(spl[i].toCharArray().length);
 				if(spl[i].contains("v") && spl[i].indexOf("v")==spl[i].toCharArray().length-1) {

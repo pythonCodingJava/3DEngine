@@ -1,4 +1,4 @@
-package renderer;
+package WindowManager;
 
 public class Perlin {
 	
