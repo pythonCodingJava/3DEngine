@@ -88,14 +88,14 @@ public class panel extends JPanel{
 					for(int i = 0; i<o.triangles.size(); i++){
 						o.triangles.get(i).idx = i;
 						for(int j = 0; j<3; j++){
-							if(o.triangles.get(i).points[j].equals(triangle.points[j])) {
-								exists[j] = true;
+							for(int k = 0; k<3; k++){
+								if(o.triangles.get(i).points[j].equals(triangle.points[k])) {
+									exists[k] = true;
+									break;
+								}
 							}
-						}
-						
+						}	
 					}
-					System.out.println(Arrays.toString(exists));
-					System.exit(0);
 					for(int i = 0; i<3; i++){
 						if(!exists[i]) {
 							o.points.remove(triangle.points[i]);
@@ -103,7 +103,7 @@ public class panel extends JPanel{
 					}
 					dealt = true;
 				}else{
-					double len = -10;
+					double len = -20;
 					Point3D point = triangle.normalize().normal().multiply(len).subtract(triangle.getCentroid().multiply(-1));
 					o.points.add(point);
 					int[] id = triangle.getIds();
