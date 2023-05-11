@@ -1,7 +1,6 @@
 package WindowManager;
 
 import javax.swing.*;
-import renderer.*;
 import renderer.Graphics3D;
 import renderer.Plane3D;
 import renderer.Point3D;
@@ -13,9 +12,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.security.KeyStore.TrustedCertificateEntry;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -51,6 +48,7 @@ public class panel extends JPanel{
 			// Capping at 60 fps.
 			while(System.currentTimeMillis() - lastTime <= 1000/cap){}
 
+			putLight();
 			// Calculating fps.
 			long t = System.currentTimeMillis();
 			if(lastTime - t != 0)
@@ -128,7 +126,7 @@ public class panel extends JPanel{
 	private Graphics2D g2d;
 
 	int res = 50;
-	int n = 1;
+	int n = 30;
 
 	private int selectedIdx = 0;
 	private boolean pressed = false;
@@ -151,14 +149,14 @@ public class panel extends JPanel{
 		//Plane
 		Point3D p = new Point3D(0,0,0);
 		o = object.plane(p.x-res*n/2,p.y-res*n/2,p.z,res*n,res*n,res,h,w);
-		// double x = 0;
-		// double y = 0;
-		// for(Point3D point : o.points){
-		// 	x = (point.x+350)/50;
-		// 	y = (point.y+350)/50;
-		// 	point.z += Perlin.PerlinNoise(x, y)*70 + Perlin.PerlinNoise((point.x+289)/120, (point.y+123)/120)*90;
-		// }
-		// o = o.rotateX(90);
+		double x = 0;
+		double y = 0;
+		for(Point3D point : o.points){
+			x = (point.x+350)/50;
+			y = (point.y+350)/50;
+			point.z += Perlin.PerlinNoise(x, y)*70 + Perlin.PerlinNoise((point.x+289)/120, (point.y+123)/120)*90;
+		}
+		o = o.rotateX(90);
 
 
 		init();

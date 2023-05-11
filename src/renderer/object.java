@@ -1,9 +1,6 @@
 package renderer;
 
 import java.util.ArrayList;
-
-import WindowManager.mainClass;
-
 import java.io.*;
 
 public class object {
