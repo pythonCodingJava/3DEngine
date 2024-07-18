@@ -1,3 +1,7 @@
+## Introduction
+
+This is a 3D Rasterizer capable of loading models from .obj files and rendering them on a java swing based window. 
+
 ## Getting Started
 
 Welcome to the VS Code Java world. Here is a guideline to help you get started to write Java code in Visual Studio Code.
